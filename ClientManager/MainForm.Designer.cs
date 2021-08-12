@@ -48,6 +48,7 @@ namespace ClientManager
             this.TB_seach.Name = "TB_seach";
             this.TB_seach.Size = new System.Drawing.Size(576, 23);
             this.TB_seach.TabIndex = 0;
+            this.TB_seach.TextChanged += new System.EventHandler(this.TB_seach_TextChanged);
             // 
             // LBL_Search
             // 
