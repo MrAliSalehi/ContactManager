@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using webApi.Models;
 using webApi.Models.Entities;
+using Newtonsoft.Json;
 namespace webApi.Controllers
 {
     public class HomeController : Controller
@@ -33,9 +34,9 @@ namespace webApi.Controllers
             }
             var search = db.Users.Where(p => p.FullName.Contains(userfullname) || p.Phone.Contains(userfullname) || p.Email.Contains(userfullname)).SingleOrDefault();
             string[] Name = search.FullName.Split(':');
-            return Ok($"User Found : {Name[0]}\n Number:{search.Phone}");
+            var Result = JsonConvert.SerializeObject(new { foo = search });
+            return Ok(Result);
         }
-
         #endregion
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
