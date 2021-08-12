@@ -26,16 +26,14 @@ namespace webApi.Controllers
         public IActionResult SearchUser(string userfullname)
         {
             contactContext db = new contactContext();
-            try
-            {
-                var search = db.Users.Where(p => p.FullName.Contains(userfullname) || p.Phone.Contains(userfullname) || p.Email.Contains(userfullname)).SingleOrDefault();
-                string[] Name = search.FullName.Split(':');
-                return Ok($"User Found : {Name[0]}\n Number:{search.Phone}");
-            }
-            catch (Exception ex) when (ex.Message.ToLower().Contains("null"))
+
+            if (string.IsNullOrEmpty(userfullname))
             {
                 return Ok("User Not Found");
             }
+            var search = db.Users.Where(p => p.FullName.Contains(userfullname) || p.Phone.Contains(userfullname) || p.Email.Contains(userfullname)).SingleOrDefault();
+            string[] Name = search.FullName.Split(':');
+            return Ok($"User Found : {Name[0]}\n Number:{search.Phone}");
         }
 
         #endregion
