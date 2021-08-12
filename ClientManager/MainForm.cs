@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClientManager.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,7 +11,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using ClientManager.Config;
 namespace ClientManager
 {
     public partial class MainForm : Form
@@ -19,13 +20,7 @@ namespace ClientManager
         {
             InitializeComponent();
         }
-        #region Refrences
-        public record ConnectionConfig()
-        {
-            public int TimeOut { get { return 10000; } }
-            public string URL { get { return "https://www.google.com"; } set { URL = URL; } }
-        }
-        #endregion
+
 
         #region Control Handlers
 
@@ -53,9 +48,15 @@ namespace ClientManager
 
 
         #region TextBox
-        private void TB_seach_TextChanged(object sender, EventArgs e)
+        private async void TB_seach_TextChanged(object sender, EventArgs e)
         {
-
+            if (TB_seach.Text.Length > 4)
+            {
+                var Text = TB_seach.Text;
+                #region Search For User
+                await Config.Config.api.GetUser(new UserModel() { });
+                #endregion
+            }
         }
         #endregion
 
@@ -66,7 +67,7 @@ namespace ClientManager
         {
             try
             {
-                ConnectionConfig conf = new ConnectionConfig();
+                var conf = new Config.Config.ConnectionConfig();
                 conf.URL ??= CultureInfo.InstalledUICulture switch
                 {
                     { Name: var n } when n.StartsWith("fa") => // Iran
@@ -91,6 +92,6 @@ namespace ClientManager
 
         #endregion
 
-        
+
     }
 }
