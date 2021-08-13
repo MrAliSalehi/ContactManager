@@ -19,8 +19,9 @@ namespace AppApi.Model.User
         [Required]
         [StringLength(100)]
         public string Phone { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Cant Be Null")]
         [StringLength(250)]
+        [EmailAddress(ErrorMessage ="Bad Email Format")]
         public string Email { get; set; }
         public string Note { get; set; }
     }

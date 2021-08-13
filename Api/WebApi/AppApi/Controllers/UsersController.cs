@@ -1,96 +1,132 @@
 ﻿using AppApi.DbManagement;
 using AppApi.Model.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Net;
-using webApi.Models.Entities;
-
+using System.Threading.Tasks;
+using AppApi.DbManagement.Interfaces;
 namespace AppApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private contactContext db;
+        #region dependency-Injection
+        /// <summary>
+        /// Inject Logger
+        /// Inject Interface 
+        /// </summary>
         private readonly ILogger<UsersController> _logger;
-
-        public UsersController(ILogger<UsersController> logger, contactContext db)
+        private IUserRepository userRepository;
+        public UsersController(ILogger<UsersController> logger, IUserRepository _userRepository)
         {
             _logger = logger;
-            this.db = db;
+            userRepository = _userRepository;
         }
+        #endregion
 
+        #region GetAllUsers
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok("hi api");
+            return new ObjectResult(await userRepository.GetAll());
         }
-        #region POST-SearchForUser
+        #endregion
+
+        #region GET-SearchForUser
         [HttpGet("{data}")]
-        public IActionResult SearchUser(string data)
+        public async Task<IActionResult> SearchUser([FromRoute] string data)
         {
-            if (string.IsNullOrEmpty(data))
+            #region Ref
+            JsonParser jp = new();
+            string result = "";
+            #endregion
+
+            #region Content Control
+            if (!ModelState.IsValid)
             {
-                return Ok("User Not Found");
+                return new ObjectResult($"No Data :\n{ModelState}") { StatusCode = (int)HttpStatusCode.BadRequest };
             }
-            
-            using (db)
+            #endregion
+
+            #region Find And Return Data
+            var search = await userRepository.Search(data);
+
+            if (search.Count is 0)
             {
-                var search = db.Users.Where(p => p.FullName.Contains(data) || p.Phone.Contains(data) || p.Email.Contains(data)).ToList();
-                JsonParser jp = new();
-                string result = "";
+                return new ObjectResult("User Not Found") { StatusCode = (int)HttpStatusCode.BadRequest };
+            }
+            else
+            {
                 foreach (var user in search)
                 {
                     result += $"{jp.DataToJson(user)},\n";
                 }
-                return Ok(result);
+                Request.HttpContext.Response.Headers.Add("H-Count", $"{search.Count}");
+                return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.OK };
             }
+
+            #endregion
         }
         #endregion
 
         #region POST-AddUser
         [HttpPost]
-        public HttpStatusCode AddNewUser(User usr)
+        public async Task<IActionResult> AddNewUser([FromBody] User usr)
         {
-            using (db)
+            if (!ModelState.IsValid)
             {
-                if (usr.FullName is null)
+                return BadRequest(ModelState);
+            }
+            else
+            {
+
+                if (!await userRepository.IsExists(usr))
                 {
-                    return HttpStatusCode.NoContent;
+                    var result = await userRepository.AddUser(usr);
+                    return new ObjectResult($"{result}") { StatusCode = (int)HttpStatusCode.OK };
                 }
                 else
                 {
-                    if (!db.Users.Any(p => p.Phone == usr.Phone || p.FullName == usr.FullName))
-                    {
-                        db.Users.Add(usr);
-                        db.SaveChanges();
-                        return HttpStatusCode.OK;
-                    }
-                    else
-                    {
-                        return HttpStatusCode.BadRequest;
-                    }
-
+                    return new ObjectResult($"User Or PhoneNumber Is Already Exists") { StatusCode = (int)HttpStatusCode.BadRequest };
                 }
+            }
+
+        }
+        #endregion
+
+        #region PUT-UpdateUser
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser([FromBody] User user, [FromRoute] int id)
+        {
+            if (ModelState.IsValid)
+            {
+                if (await userRepository.IsExists(new User() { Id = id }))
+                {
+                    var result = userRepository.UpdateUser(user);
+                    return new ObjectResult($"{result}") { StatusCode = (int)HttpStatusCode.OK };
+                }
+                else
+                {
+                    return new ObjectResult($"User Not Exists") { StatusCode = (int)HttpStatusCode.BadRequest };
+                }
+            }
+            else
+            {
+                return new ObjectResult($"Invalid Data:\n{ModelState}") { StatusCode = (int)HttpStatusCode.BadRequest };
             }
         }
         #endregion
 
-        #region Put-UpdateUser
-        [HttpPut]
-        public HttpStatusCode UpdateUser(User user, string OldName)
+        #region DELETE-RemoveUser
+        [HttpDelete("{id}")]
+        public async Task<HttpStatusCode> DeleteUser([FromRoute] int id)
         {
-            if (user.FullName is not null && OldName is not null)
+            if (ModelState.IsValid)
             {
-                using (db)
-                {
-                    if (db.Users.Any(p => p.FullName == OldName))
-                    {
-                        db.Users.Update(user);
-                        db.SaveChanges();
-                    }
-                }
+                await userRepository.RemoveUser(id);
                 return HttpStatusCode.OK;
             }
             else
