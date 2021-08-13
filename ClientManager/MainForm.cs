@@ -54,7 +54,7 @@ namespace ClientManager
             {
                 var Text = TB_seach.Text;
                 #region Search For User
-                await Config.Config.api.GetUser(new UserModel() { });
+                //await Config.Config.api.GetUser(new UserModel() { });
                 #endregion
             }
         }

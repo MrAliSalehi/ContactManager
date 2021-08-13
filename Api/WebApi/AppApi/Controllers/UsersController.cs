@@ -1,12 +1,11 @@
 ﻿using AppApi.DbManagement;
 using AppApi.Model.User;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AppApi.DbManagement.Interfaces;
+
 namespace AppApi.Controllers
 {
     [ApiController]
@@ -29,6 +28,7 @@ namespace AppApi.Controllers
 
         #region GetAllUsers
         [HttpGet]
+        [ResponseCache(Duration = 100)]
         public async Task<IActionResult> Get()
         {
             return new ObjectResult(await userRepository.GetAll());

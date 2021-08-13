@@ -25,6 +25,7 @@ namespace AppApi
             services.AddControllers();
             services.AddDbContext<contactContext>(op => { op.UseSqlServer("Data Source = QWxp\\SQL2019;Initial Catalog=ContactDB;Integrated Security=True"); });
             services.AddTransient<IUserRepository,UserRepository>();
+            services.AddResponseCaching();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -33,11 +34,9 @@ namespace AppApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseResponseCaching();
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
