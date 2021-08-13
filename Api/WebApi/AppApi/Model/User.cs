@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
-namespace webApi.Models.Entities
+namespace AppApi.Model.User
 {
     public partial class User
     {
