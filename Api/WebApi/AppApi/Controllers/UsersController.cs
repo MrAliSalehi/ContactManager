@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
 using AppApi.DbManagement.Interfaces;
-
 namespace AppApi.Controllers
 {
     [ApiController]
@@ -17,11 +16,12 @@ namespace AppApi.Controllers
         /// Inject Logger
         /// Inject Interface 
         /// </summary>
-        private readonly ILogger<UsersController> _logger;
+        private readonly ILogger<UsersController> logger;
         private IUserRepository userRepository;
-        public UsersController(ILogger<UsersController> logger, IUserRepository _userRepository)
+
+        public UsersController(ILogger<UsersController> _logger, IUserRepository _userRepository)
         {
-            _logger = logger;
+            logger = _logger;
             userRepository = _userRepository;
         }
         #endregion
@@ -60,6 +60,7 @@ namespace AppApi.Controllers
             }
             else
             {
+                
                 foreach (var user in search)
                 {
                     result += $"{jp.DataToJson(user)},\n";
@@ -86,7 +87,7 @@ namespace AppApi.Controllers
                 if (!await userRepository.IsExists(usr))
                 {
                     var result = await userRepository.AddUser(usr);
-                    return new ObjectResult($"{result}") { StatusCode = (int)HttpStatusCode.OK };
+                    return new ObjectResult($"Added") { StatusCode = (int)HttpStatusCode.OK };
                 }
                 else
                 {
@@ -105,8 +106,8 @@ namespace AppApi.Controllers
             {
                 if (await userRepository.IsExists(new User() { Id = id }))
                 {
-                    var result = userRepository.UpdateUser(user);
-                    return new ObjectResult($"{result}") { StatusCode = (int)HttpStatusCode.OK };
+                    var result = await userRepository.UpdateUser(user);
+                    return new ObjectResult($"modified") { StatusCode = (int)HttpStatusCode.OK };
                 }
                 else
                 {

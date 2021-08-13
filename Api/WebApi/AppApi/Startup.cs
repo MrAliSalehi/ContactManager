@@ -26,6 +26,7 @@ namespace AppApi
             services.AddDbContext<contactContext>(op => { op.UseSqlServer("Data Source = QWxp\\SQL2019;Initial Catalog=ContactDB;Integrated Security=True"); });
             services.AddTransient<IUserRepository,UserRepository>();
             services.AddResponseCaching();
+            services.AddMemoryCache();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
