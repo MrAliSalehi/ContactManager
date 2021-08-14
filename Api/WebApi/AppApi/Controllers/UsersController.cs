@@ -5,8 +5,11 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
 using AppApi.DbManagement.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+
 namespace AppApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
