@@ -17,7 +17,7 @@ namespace AppApi.Controllers
         /// <summary>
         /// Authentication With Jwt Method And Simple Static Identify
         /// </summary>
-        /// <param name="info">just pass it a admin:admin as username/password </param>
+        /// <param name="info">just pass it an admin:admin as username/password </param>
         /// <returns>returns status code:)</returns>
         [HttpPost]
         public async Task<IActionResult> AuthenUser([FromBody] Identify info)
