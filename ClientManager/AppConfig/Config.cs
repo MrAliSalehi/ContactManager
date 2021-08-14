@@ -8,7 +8,6 @@ namespace ClientManager.Config
 {
     public static class Config
     {
-       public static ApiHandler api = new ApiHandler();
 
         public  record ConnectionConfig()
         {

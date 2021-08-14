@@ -30,12 +30,12 @@ namespace ClientManager
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,21 +56,35 @@ namespace ClientManager
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Login";
             // 
-            // textBox1
+            // label2
             // 
-            this.textBox1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.textBox1.Location = new System.Drawing.Point(76, 42);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(312, 25);
-            this.textBox1.TabIndex = 0;
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label2.Location = new System.Drawing.Point(33, 79);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(36, 19);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Pass";
             // 
-            // textBox2
+            // label1
             // 
-            this.textBox2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.textBox2.Location = new System.Drawing.Point(76, 73);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(312, 25);
-            this.textBox2.TabIndex = 1;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label1.Location = new System.Drawing.Point(33, 48);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(37, 19);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "User";
+            // 
+            // button2
+            // 
+            this.button2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.button2.Location = new System.Drawing.Point(6, 154);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(382, 20);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Cancel";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // button1
             // 
@@ -86,35 +100,22 @@ namespace ClientManager
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button2
+            // textBox2
             // 
-            this.button2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button2.Location = new System.Drawing.Point(6, 154);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(382, 20);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Cancel";
-            this.button2.UseVisualStyleBackColor = true;
+            this.textBox2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBox2.Location = new System.Drawing.Point(76, 73);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(312, 25);
+            this.textBox2.TabIndex = 1;
+            this.textBox2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyDown);
             // 
-            // label1
+            // textBox1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(33, 48);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 19);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "User";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(33, 79);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(36, 19);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Pass";
+            this.textBox1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBox1.Location = new System.Drawing.Point(76, 42);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(312, 25);
+            this.textBox1.TabIndex = 0;
             // 
             // Login
             // 

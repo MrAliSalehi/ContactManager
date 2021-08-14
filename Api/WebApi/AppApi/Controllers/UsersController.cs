@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using AppApi.DbManagement.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-
+using WebApi.Jwt.Filters;
 namespace AppApi.Controllers
 {
     [Authorize]
@@ -21,32 +21,35 @@ namespace AppApi.Controllers
         /// </summary>
         private readonly ILogger<UsersController> logger;
         private IUserRepository userRepository;
+        public string logmsg { get; set; }
 
         public UsersController(ILogger<UsersController> _logger, IUserRepository _userRepository)
         {
             logger = _logger;
             userRepository = _userRepository;
+            
         }
         #endregion
-
         #region GetAllUsers
         [HttpGet]
         [ResponseCache(Duration = 100)]
         public async Task<IActionResult> Get()
         {
+            logmsg = "somthing on get happend";
+            logger.LogInformation(logmsg);
             return new ObjectResult(await userRepository.GetAll());
         }
         #endregion
 
         #region GET-SearchForUser
         [HttpGet("{data}")]
-        public async Task<IActionResult> SearchUser([FromRoute] string data)
+        public async Task<IActionResult> SearchUser([FromRoute] string data,string token)
         {
             #region Ref
             JsonParser jp = new();
             string result = "";
             #endregion
-
+            
             #region Content Control
             if (!ModelState.IsValid)
             {

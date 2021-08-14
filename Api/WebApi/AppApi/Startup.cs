@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using AppApi.Properties;
 using AppApi.Jwt;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace AppApi
 {
@@ -37,34 +40,47 @@ namespace AppApi
 
             #region Jwt Setup
             SecretKeyGen newKey = new SecretKeyGen();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme
+            )
                 .AddJwtBearer(setting =>
                 {
+                    setting.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = con =>
+                        {
+                            var accesstoken = con.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                            if (!string.IsNullOrEmpty(accesstoken))
+                            {
+                                con.Token = accesstoken;
+                            }
+                            return Task.FromResult(true);
+                        }
+                    };
+                    setting.RequireHttpsMetadata = false;
+                    setting.SaveToken = true;
                     setting.TokenValidationParameters = new TokenValidationParameters()
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuers = PublicSettings.ApiAddress,
-                        IssuerSigningKey = newKey.SecretKey
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SomeSecretKeyFromWebApiItsVerySecret")),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
                     };
                 });
             #endregion
 
-            #region Policy Setup
-            services.AddCors(s =>
-            {
-                s.AddPolicy("PolicyCR",
-                    build =>
-                    {
-                        build.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .Build();
-                    });
-            });
-            #endregion
+            //#region Policy Setup
+            //services.AddCors(s =>
+            //{
+            //    s.AddPolicy("PolicyCR",
+            //        build =>
+            //        {
+            //            build.AllowAnyOrigin()
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod()
+            //            .Build();
+            //        });
+            //});
+            //#endregion
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -73,15 +89,12 @@ namespace AppApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors("PolicyCR");
-
             app.UseRouting();
-
-            #region My-Chances
-            app.UseResponseCaching();
-            app.UseAuthorization();
+            // app.UseCors("PolicyCR");
             app.UseAuthentication();
-            #endregion
+            app.UseAuthorization();
+
+            app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
             {

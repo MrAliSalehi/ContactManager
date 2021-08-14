@@ -19,4 +19,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="WebApi.Jwt">
+      <HintPath>C:\Users\Qwxp\source\repos\WebApi.Jwt\WebApi.Jwt\bin\WebApi.Jwt.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

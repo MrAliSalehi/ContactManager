@@ -12,6 +12,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClientManager.Config;
+using System.Net.Http;
+using System.IO;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+
 namespace ClientManager
 {
     public partial class MainForm : Form
@@ -50,12 +55,13 @@ namespace ClientManager
         #region TextBox
         private async void TB_seach_TextChanged(object sender, EventArgs e)
         {
-            if (TB_seach.Text.Length > 4)
+            if (TB_seach.Text.Length >= 4)
             {
                 var Text = TB_seach.Text;
-                #region Search For User
-                //await Config.Config.api.GetUser(new UserModel() { });
-                #endregion
+               
+                StreamReader sr = new StreamReader("\\tokenAccess.AT");
+                string getToken = await sr.ReadToEndAsync();
+                SearchUser(Text, getToken);
             }
         }
         #endregion
@@ -63,6 +69,23 @@ namespace ClientManager
         #endregion
 
         #region Functions
+
+        public async void SearchUser(string data, string token)
+        {
+            
+
+            
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var req = new HttpRequestMessage(new HttpMethod("Get"), $"http://localhost:5000/api/users/");
+
+            var responce = client.SendAsync(req).Result;
+            var results = responce.Content.ReadAsStringAsync().Result;
+
+            //var body = JsonConvert.SerializeObject(data);
+            //var content = new StringContent(body, Encoding.UTF8, "application/json");
+            //var responce = client.PostAsync("http://localhost:44000/api/auth", content).Result;
+        }
         public bool NetConnection()
         {
             try

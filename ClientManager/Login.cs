@@ -11,6 +11,11 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using ClientManager.Models;
 using System.Security.Claims;
+using System.Net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace ClientManager
 {
@@ -40,23 +45,30 @@ namespace ClientManager
         {
             var body = JsonConvert.SerializeObject(login);
             var content = new StringContent(body, Encoding.UTF8, "application/json");
-            var responce = _client.PostAsync("http://localhost:44000/api/auth", content).Result;
+            var responce = _client.PostAsync("http://localhost:5000/api/auth", content).Result;
             if (responce.IsSuccessStatusCode)
             {
-                var t = responce.Content.ReadAsStringAsync().Result;
-                var j = JsonConvert.DeserializeObject<TokenViewModel>(t);
-                List<Claim> clm = new()
+                var results = responce.Content.ReadAsStringAsync().Result;
+                var Token = JsonConvert.DeserializeObject<TokenViewModel>(results);
+                using (StreamWriter sw =new StreamWriter("\\tokenAccess.AT"))
                 {
-                    new Claim(ClaimTypes.NameIdentifier, login.Username),
-                    new Claim("AccessToken", j.token)
-                };
-                var identity = new ClaimsIdentity(clm);
+                    sw.WriteLine(Token.token);
+                }
+                
                 return true;
 
             }
             else
             {
                 return false;
+            }
+        }
+
+        private void textBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData is Keys.Enter)
+            {
+                button1_Click(new object(), null);
             }
         }
     }

@@ -31,7 +31,7 @@ namespace AppApi.DbManagement.Repositories
         }
 
         public async Task<IEnumerable<User>> GetAll()
-        {
+        {     
             return await db.Users.ToListAsync();
         }
 
