@@ -103,6 +103,7 @@ namespace ClientManager
             this.BTN_Update.TabIndex = 4;
             this.BTN_Update.Text = "Edit";
             this.BTN_Update.UseVisualStyleBackColor = true;
+            this.BTN_Update.Click += new System.EventHandler(this.BTN_Update_Click);
             // 
             // BTN_ADD
             // 

@@ -8,9 +8,10 @@ namespace AppApi.DbManagement.Interfaces
     {
         Task<IEnumerable<User>> GetAll();
         Task<User> AddUser(User user);
-        Task<User> UpdateUser(User user);
+        Task<User> UpdateUser(User user,int id);
         Task<List<User>> Search(string data);
         Task<User> RemoveUser(int id);
         Task<bool> IsExists(User user);
+        Task<User> SearchByID(int id);
     }
 }

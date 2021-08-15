@@ -183,6 +183,7 @@ namespace ClientManager
             this.Name = "AddUserForm";
             this.ShowIcon = false;
             this.Text = "Add New User";
+            this.Load += new System.EventHandler(this.AddUserForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

@@ -28,11 +28,11 @@ namespace AppApi.Controllers
         {
             logger = _logger;
             userRepository = _userRepository;
-            
+
         }
         #endregion
 
-        #region GetAllUsers
+        #region Get-AllUsers
         [HttpGet]
         [ResponseCache(Duration = 100)]
         public async Task<IActionResult> Get()
@@ -45,14 +45,13 @@ namespace AppApi.Controllers
 
         #region GET-SearchForUser
         [HttpGet("{data}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> SearchUser([FromRoute] string data,string token)
+        public async Task<IActionResult> SearchUser([FromRoute] string data, string token)
         {
             #region Ref
             JsonParser jp = new();
             //string result = "";
             #endregion
-            
+
             #region Content Control
             if (!ModelState.IsValid)
             {
@@ -78,6 +77,32 @@ namespace AppApi.Controllers
         }
         #endregion
 
+        #region Get-UserByID
+        [HttpGet("getbyid/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUserByID([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new ObjectResult($"No Data :\n{ModelState}") { StatusCode = (int)HttpStatusCode.BadRequest };
+            }
+            else
+            {
+                var finduser = await userRepository.SearchByID(id);
+                if (finduser is not null)
+                {
+                    JsonParser jp = new();
+                    return new ObjectResult(jp.DataToJson(finduser)) { StatusCode = (int)HttpStatusCode.OK };
+                }
+                else
+                {
+                    return new ObjectResult("User Not Found") { StatusCode = (int)HttpStatusCode.NoContent };
+                }
+            }
+        }
+
+
+        #endregion
         #region POST-AddUser
         [HttpPost]
         public async Task<IActionResult> AddNewUser([FromBody] User usr)
@@ -111,7 +136,7 @@ namespace AppApi.Controllers
             {
                 if (await userRepository.IsExists(new User() { Id = id }))
                 {
-                    var result = await userRepository.UpdateUser(user);
+                    var result = await userRepository.UpdateUser(user,id);
                     return new ObjectResult($"modified") { StatusCode = (int)HttpStatusCode.OK };
                 }
                 else

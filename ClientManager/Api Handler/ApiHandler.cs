@@ -36,73 +36,43 @@ namespace ClientManager
         #region Request Handler
         public async Task<Responce> SendRequestAysnc(RequestModel model)
         {
-            
-            
-            
+            var SetUrl = new WebApiDetail(Controller: model.Controller);
             switch (model.requestMethod)
             {
+                #region Get
                 case RequestMethod.Get:
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(model.tokenConfig.tokenStyle, model.tokenConfig.token);
-                    var SetUrl = new WebApiDetail(Controller: model.Controller);
                     var RequestContent = new HttpRequestMessage(new HttpMethod($"{model.requestMethod}"), $"{SetUrl.ApiUrl}/{model.RouteData}");
                     var SendGet = await client.SendAsync(RequestContent);
                     return new Responce() { status = SendGet.StatusCode is HttpStatusCode.OK ? ResponceStatus.success : ResponceStatus.BadRequest, Content = SendGet.Content };
-                
-                
+                #endregion
+
+                #region Post
                 case RequestMethod.Post:
-                    //var content = new StringContent(JsonConvert.SerializeObject(model.BodyData.BodyModelContent), model.BodyData.encoding, model.BodyData.ContentType);
-                    //
-                    //var SendPost = await client.PostAsync(RequestContent.RequestUri, content);
-                    //var req = new HttpRequestMessage(new HttpMethod("Post"), $"/api/users/");
-
-                    //var responce = client.SendAsync(req).Result;
-
                     string jsonUser = JsonConvert.SerializeObject(model.BodyData.BodyModelContent);
-                    //UTF8Encoding encoder = new UTF8Encoding();
-                    //byte[] data = encoder.GetBytes(jsonCustomer);
-
-
-                    //StringContent content = new StringContent(jsonCustomer, model.BodyData.encoding, "application/json");
-                    ////content.Headers.ContentLength = data.Length;
-
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(model.tokenConfig.tokenStyle, model.tokenConfig.token);
-                    //var res = await client.PostAsync("http://localhost:5000/api/users", content);
-                    //res.Content.Headers.Clear();
-                    //res.Content.Headers.Add(@"Content-Length",$"{jsonCustomer.Length}");
-
-                    //Console.WriteLine();
-                    //var resp= new Responce() { status = res.StatusCode is HttpStatusCode.OK ? ResponceStatus.success : ResponceStatus.BadRequest, Content = res.Content };
-
-
-                    var clienttt = new RestClient("http://localhost:5000");
+                    var clienttt = new RestClient(SetUrl.ApiUrl);
                     clienttt.Authenticator = new JwtAuthenticator(model.tokenConfig.token);
-                    var request = new RestRequest("api/users");
-                    //request.AddParameter("thing1", "Hello");
-                    //request.AddParameter("thing2", "world");
-                    //request.AddHeader("header", "value");
-                    request.AddHeader("Content-Type","application/json");
+                    var request = new RestRequest($"/{model.RouteData}");
+                    request.AddHeader("Content-Type", model.BodyData.ContentType);
                     request.AddJsonBody(jsonUser);
                     var response = clienttt.Post(request);
-                    var content = response.Content; // Raw content as string
+                    var content = response.Content;
+                    return new Responce() { status = response.StatusCode is HttpStatusCode.OK ? ResponceStatus.success : ResponceStatus.BadRequest, Content = content };
+                #endregion
 
-                    //var response2 = clienttt.Post<UserModel>(request);
-                    //var name = response2.Data.FullName;
+                #region Put
+                case RequestMethod.Put:
+                    string jsonbody = JsonConvert.SerializeObject(model.BodyData.BodyModelContent);
+                    var PutClient = new RestClient(SetUrl.ApiUrl);
+                    PutClient.Authenticator = new JwtAuthenticator(model.tokenConfig.token);
+                    var PutRequest = new RestRequest($"/{Convert.ToInt32(model.RouteData)}");
+                    PutRequest.AddHeader("Content-Type", model.BodyData.ContentType);
+                    PutRequest.AddJsonBody(jsonbody);
+                    var Putresponse = PutClient.Put(PutRequest);
+                    var Putcontent = Putresponse.Content;
+                    return new Responce() { status = Putresponse.StatusCode is HttpStatusCode.OK ? ResponceStatus.success : ResponceStatus.BadRequest, Content = Putcontent };
 
-
-
-
-
-
-
-
-
-
-
-                    return null;
-                //return null;
-                
-                
-                
+                #endregion
                 default:
                     return null;
             }
@@ -137,6 +107,8 @@ namespace ClientManager
         #endregion
 
         #region Search
+
+        #region by Any
         public async Task<Responce> SearchUserAsync(string data, string token)
         {
 
@@ -161,6 +133,34 @@ namespace ClientManager
         }
         #endregion
 
+        #region by ID
+        public async Task<Responce> SearchUserByIDAsync(int id, string token)
+        {
+
+            var request = await SendRequestAysnc(new RequestModel()
+            {
+                Controller = "users/getbyid",
+                requestMethod = RequestMethod.Get,
+                RouteData = id.ToString(),
+                tokenConfig = new Token() { token = token }
+            });
+            if (request.status == ResponceStatus.success)
+            {
+                var results = await request.Content.ReadAsStringAsync();
+                var DeSerializeResults = JsonConvert.DeserializeObject(results);
+                return new Responce() { status = request.status, Content = DeSerializeResults };
+
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+        #endregion
+        #endregion
+
         #region Add
 
         public async Task<Responce> AddUserAysnc(UserModel RegisterModel, string token)
@@ -178,22 +178,40 @@ namespace ClientManager
                 }
             }
             );
-            var results = await Request.Content.ReadAsStringAsync();
-            return new Responce(){ status = Request.status , Content = results};
+            return new Responce() { status = Request.status, Content = Request.Content };
         }
         #endregion
 
         #region Update
 
-
+        public async Task<Responce> UpdateUserAysnc(UserModel model, int id, string token)
+        {
+            var Request = await SendRequestAysnc(new RequestModel()
+            {
+                Controller = "users",
+                requestMethod = RequestMethod.Put,
+                tokenConfig = new Token() { token = token },
+                RouteData = $"{id}",
+                BodyData = new Body()
+                {
+                    BodyModelContent = model,
+                    ContentType = "application/json"
+                }
+            });
+            return new Responce() { status = Request.status, Content = Request.Content };
+        }
 
         #endregion
 
         #region Delete
-
+        public async Task<Responce> RemoveUserAysnc()
+        {
+            return null;
+        }
 
 
         #endregion
+
         #endregion
     }
 }

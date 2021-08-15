@@ -38,7 +38,7 @@ namespace ClientManager
         #region Buttons
         private void BTN_ADD_Click(object sender, EventArgs e)
         {
-            AddUserForm adduser = new AddUserForm();
+            AddUserForm adduser = new AddUserForm(FormMode.Add);
             adduser.ShowDialog();
             this.Hide();
         }
@@ -116,8 +116,30 @@ namespace ClientManager
         }
 
 
+
         #endregion
 
+        private void BTN_Update_Click(object sender, EventArgs e)
+        {
 
+            if (DGV_1.SelectedRows.Count is 1)
+            {
+                this.Hide();
+                int i = DGV_1.SelectedCells[0].RowIndex;
+                DataGridViewRow selected = DGV_1.Rows[i];
+                AddUserForm addfm = new(FormMode.Edit, Convert.ToInt32(selected.Cells["N:ID"].Value));
+                addfm.ShowDialog();
+            }
+            else if (DGV_1.SelectedRows.Count is 0)
+            {
+                
+                MessageBox.Show("select a row plz");
+            }
+            else
+            {
+                MessageBox.Show("cant edit multiple rows");
+            }
+
+        }
     }
 }
