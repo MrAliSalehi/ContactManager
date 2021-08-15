@@ -14,6 +14,6 @@ namespace ClientManager.Models
     public static class UserItems
     {
         private static UserModel us = new();
-        public static List<string> ItemNames => new() { nameof(us.ID), nameof(us.FullName), nameof(us.Phone), nameof(us.Email), nameof(us.Note) };
+        public static List<string> ItemNames => new() { nameof(us.ID), "FirstName","LastName", nameof(us.Phone), nameof(us.Email), nameof(us.Note) };
     }
 }

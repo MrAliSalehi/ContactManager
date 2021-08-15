@@ -31,6 +31,7 @@ namespace AppApi.Controllers
             
         }
         #endregion
+
         #region GetAllUsers
         [HttpGet]
         [ResponseCache(Duration = 100)]

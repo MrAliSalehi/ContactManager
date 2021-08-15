@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
 using System.Net;
-using System.Windows.Forms;
 using System.IO;
-using System.Linq;
-using AppConfig.Status;
+using System.Windows.Forms;
+using System.Globalization;
+using ClientManager.AppConfig;
 using ClientManager.Models;
 using Newtonsoft.Json;
-using System.Web;
 namespace ClientManager
 {
     public partial class MainForm : Form
@@ -25,11 +21,11 @@ namespace ClientManager
         #region MainForm
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (NetConnection() is not true)
-            {
-                MessageBox.Show("Need Net Connection", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-            }
+            //if (NetConnection() is not true)
+            //{
+            //    MessageBox.Show("Need Net Connection", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    Application.Exit();
+            //}
 
             var columns = UserItems.ItemNames;
             foreach (var column in columns)
@@ -43,53 +39,47 @@ namespace ClientManager
         private void BTN_ADD_Click(object sender, EventArgs e)
         {
             AddUserForm adduser = new AddUserForm();
-            //Initial AddUser Form
             adduser.ShowDialog();
-            //Temperory Hide Main Form ,For Fun))
             this.Hide();
         }
         #endregion
-
 
         #region TextBox
         private async void TB_seach_TextChanged(object sender, EventArgs e)
         {
             if (TB_seach.Text.Length >= 2)
             {
-                var Text = TB_seach.Text;
-
-                #region ReadToken
-                StreamReader sr = new StreamReader("\\tokenAccess.AT");
-                string getToken = await sr.ReadToEndAsync();
-                sr.Close();
-                #endregion
+                ReadToken token = new();
                 ApiHandler api = new ApiHandler();
-                var res = await api.SearchUserAsync(Text, getToken);
-                if (res.status is ResponceStatus.success)
+                var res = await api.SearchUserAsync(TB_seach.Text, await token.TokenReaderAsync());
+                if (res is not null)
                 {
                     DGV_1.Rows.Clear();
                     foreach (var data in res.Content)
                     {
-                        var strData=data.ToString();
+                        var strData = data.ToString();
                         UserModel DSData = JsonConvert.DeserializeObject<UserModel>(strData);
-                        DGV_1.Rows.Add(DSData.ID, DSData.FullName, DSData.Phone, DSData.Email, DSData.Note);
+                        string[] SplitName = DSData.FullName.Split(':');
+                        DGV_1.Rows.Add(DSData.ID, SplitName[0], SplitName[1], DSData.Phone, DSData.Email, DSData.Note);
                     }
-
-                }
-                else if (res.status is ResponceStatus.UnAuthorize)
-                {
-
                 }
                 else
                 {
                     DGV_1.Rows.Clear();
-                    DGV_1.Rows.Add("no","content","found");
+                    DGV_1.Rows.Add("no", "content", "found");
                 }
 
             }
             else
             {
                 DGV_1.Rows.Clear();
+            }
+        }
+        private void TB_seach_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsLetter(e.KeyChar) == false && char.IsControl(e.KeyChar) == false)
+            {
+                e.Handled = true;
             }
         }
         #endregion
@@ -124,6 +114,7 @@ namespace ClientManager
                 return false;
             }
         }
+
 
         #endregion
 

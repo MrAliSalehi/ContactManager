@@ -28,6 +28,7 @@ namespace WebApi.Test
         public void SearchUser(string data)
         {
             var req = new HttpRequestMessage(new HttpMethod("Get"), $"/api/users/{data}");
+            
             var responce = _cl.SendAsync(req).Result;
             Assert.AreEqual(HttpStatusCode.BadRequest, responce.StatusCode);
         }
