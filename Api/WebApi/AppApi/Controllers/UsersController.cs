@@ -6,7 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 using AppApi.DbManagement.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using WebApi.Jwt.Filters;
+using Newtonsoft.Json;
+using System.Text.Json;
 namespace AppApi.Controllers
 {
     [Authorize]
@@ -43,11 +44,12 @@ namespace AppApi.Controllers
 
         #region GET-SearchForUser
         [HttpGet("{data}")]
+        [AllowAnonymous]
         public async Task<IActionResult> SearchUser([FromRoute] string data,string token)
         {
             #region Ref
             JsonParser jp = new();
-            string result = "";
+            //string result = "";
             #endregion
             
             #region Content Control
@@ -66,13 +68,9 @@ namespace AppApi.Controllers
             }
             else
             {
-                
-                foreach (var user in search)
-                {
-                    result += $"{jp.DataToJson(user)},\n";
-                }
+                var json = JsonConvert.SerializeObject(search);
                 Request.HttpContext.Response.Headers.Add("H-Count", $"{search.Count}");
-                return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.OK };
+                return new ObjectResult(json) { StatusCode = (int)HttpStatusCode.OK };
             }
 
             #endregion

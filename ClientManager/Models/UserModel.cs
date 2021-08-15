@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ClientManager.Models
 {
@@ -13,5 +9,11 @@ namespace ClientManager.Models
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Note { get; set; }
+    }
+
+    public static class UserItems
+    {
+        private static UserModel us = new();
+        public static List<string> ItemNames => new() { nameof(us.ID), nameof(us.FullName), nameof(us.Phone), nameof(us.Email), nameof(us.Note) };
     }
 }

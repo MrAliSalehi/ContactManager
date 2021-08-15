@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClientManager.Config
+﻿namespace ClientManager.Config
 {
     public static class Config
     {
@@ -14,9 +8,10 @@ namespace ClientManager.Config
             public  int TimeOut { get { return 10000; } }
             public  string URL { get { return "https://www.google.com"; } set { URL = URL; } }
         }
-        public  record WebApiDetail(int Port, string Controller)
+        public  record WebApiDetail(int Port = 5000, string Controller = "/api/users")
         {
-            public  string ApiUrl { get { return $"https://localhost:{Port}/{Controller}"; } }
+            private readonly string SetController = Controller.Contains("/api")?Controller:$"/api/{Controller}";
+            public  string ApiUrl { get { return $"http://localhost:{Port}{SetController}"; } }
         }
         
     }

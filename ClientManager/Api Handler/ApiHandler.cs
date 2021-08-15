@@ -1,35 +1,67 @@
-﻿using ClientManager.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using ClientManager.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using ClientManager.Config;
 using Newtonsoft.Json;
-
+using System.IO;
+using System.Linq;
+using Accessibility;
+using static ClientManager.Config.Config;
+using AppConfig.Status;
 namespace ClientManager
 {
     public class ApiHandler
     {
 
         static HttpClient client;
-        public ApiHandler(HttpClient _client)
+        private HttpClientHandler clientHandler;
+        public ApiHandler()
         {
-            client = _client;
+            clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            client = new HttpClient(clientHandler);
         }
 
-        public void SearchUser(string data,string token)
+        public async Task<Responce> SearchUserAsync(string data, string token)
         {
-            var req = new HttpRequestMessage(new HttpMethod("Get"), $"http://localhost:44000/api/users/{data}");
-            var responce = client.SendAsync(req).Result;
+            var ApiUrL = new WebApiDetail();
+            var req = new HttpRequestMessage(new HttpMethod("Get"), $"{ApiUrL.ApiUrl}/{data}");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var results = responce.Content.ReadAsStringAsync().Result;
+            var responce = client.SendAsync(req).Result;
+            if (responce.IsSuccessStatusCode)
+            {
+                var results = await responce.Content.ReadAsStringAsync();
+                var DeSerializeResults = JsonConvert.DeserializeObject(results);
 
-            var body = JsonConvert.SerializeObject(data);
-            var content = new StringContent(body, Encoding.UTF8, "application/json");
-            //var responce = client.PostAsync("http://localhost:44000/api/auth", content).Result;
+                return new Responce() { status = ResponceStatus.success, Content = DeSerializeResults };
+            }
+            else
+            {
+                return new Responce() { status = ResponceStatus.BadRequest, Content = null };
+            }
+        }
+        public async Task<bool> LoginUserAsync(LoginViewModel login)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(login), Encoding.UTF8, "application/json");
+            var responce = await client.PostAsync(new WebApiDetail(Controller: "auth").ApiUrl, content);
+
+            if (responce.IsSuccessStatusCode)
+            {
+                var results = await responce.Content.ReadAsStringAsync();
+                var Token = JsonConvert.DeserializeObject<TokenViewModel>(results);
+
+                await using (StreamWriter sw = new StreamWriter("\\tokenAccess.AT"))
+                {
+                    await sw.WriteLineAsync(Token.token);
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

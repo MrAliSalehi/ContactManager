@@ -7,7 +7,7 @@ namespace AppApi.DbManagement
     {
         public string DataToJson(object data)
         {
-            return JsonConvert.SerializeObject(new { foo = data });
+            return JsonConvert.SerializeObject(data);
         }
         public JArray JsonToData()
         {

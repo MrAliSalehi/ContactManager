@@ -1,22 +1,15 @@
-﻿using ClientManager.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using ClientManager.Config;
-using System.Net.Http;
 using System.IO;
-using System.Net.Http.Headers;
+using System.Linq;
+using AppConfig.Status;
+using ClientManager.Models;
 using Newtonsoft.Json;
-
+using System.Web;
 namespace ClientManager
 {
     public partial class MainForm : Form
@@ -37,6 +30,12 @@ namespace ClientManager
                 MessageBox.Show("Need Net Connection", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
+
+            var columns = UserItems.ItemNames;
+            foreach (var column in columns)
+            {
+                DGV_1.Columns.Add(new DataGridViewTextBoxColumn() { DataPropertyName = column, HeaderText = column, Name = $"N:{column}" });
+            }
         }
         #endregion
 
@@ -55,13 +54,42 @@ namespace ClientManager
         #region TextBox
         private async void TB_seach_TextChanged(object sender, EventArgs e)
         {
-            if (TB_seach.Text.Length >= 4)
+            if (TB_seach.Text.Length >= 2)
             {
                 var Text = TB_seach.Text;
-               
+
+                #region ReadToken
                 StreamReader sr = new StreamReader("\\tokenAccess.AT");
                 string getToken = await sr.ReadToEndAsync();
-                SearchUser(Text, getToken);
+                sr.Close();
+                #endregion
+                ApiHandler api = new ApiHandler();
+                var res = await api.SearchUserAsync(Text, getToken);
+                if (res.status is ResponceStatus.success)
+                {
+                    DGV_1.Rows.Clear();
+                    foreach (var data in res.Content)
+                    {
+                        var strData=data.ToString();
+                        UserModel DSData = JsonConvert.DeserializeObject<UserModel>(strData);
+                        DGV_1.Rows.Add(DSData.ID, DSData.FullName, DSData.Phone, DSData.Email, DSData.Note);
+                    }
+
+                }
+                else if (res.status is ResponceStatus.UnAuthorize)
+                {
+
+                }
+                else
+                {
+                    DGV_1.Rows.Clear();
+                    DGV_1.Rows.Add("no","content","found");
+                }
+
+            }
+            else
+            {
+                DGV_1.Rows.Clear();
             }
         }
         #endregion
@@ -70,22 +98,6 @@ namespace ClientManager
 
         #region Functions
 
-        public async void SearchUser(string data, string token)
-        {
-            
-
-            
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var req = new HttpRequestMessage(new HttpMethod("Get"), $"http://localhost:5000/api/users/");
-
-            var responce = client.SendAsync(req).Result;
-            var results = responce.Content.ReadAsStringAsync().Result;
-
-            //var body = JsonConvert.SerializeObject(data);
-            //var content = new StringContent(body, Encoding.UTF8, "application/json");
-            //var responce = client.PostAsync("http://localhost:44000/api/auth", content).Result;
-        }
         public bool NetConnection()
         {
             try
