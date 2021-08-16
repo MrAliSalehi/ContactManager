@@ -43,16 +43,6 @@ namespace AppApi.Controllers
                     #endregion
 
                     #region Config
-                    //var TokenConfig = new JwtSecurityToken
-                    //    (
-                    //    signingCredentials: Credential,
-                    //    claims: new List<Claim>() {
-                    //        new Claim(ClaimTypes.Name, info.Username),
-                    //        new Claim(ClaimTypes.Role, "admin")
-                    //    },
-                    //    expires: DateTime.Now.AddMinutes(20),
-                    //    issuer: PublicSettings.ApiAddress.First()
-                    //    );
 
                     var claims = new List<Claim>() {
                     new Claim(ClaimTypes.Name,info.Username),

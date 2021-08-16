@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ using AppApi.Jwt;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.OpenApi.Models;
 
 namespace AppApi
 {
@@ -32,7 +34,12 @@ namespace AppApi
             services.AddControllers();
             services.AddDbContext<contactContext>(op => { op.UseSqlServer("Data Source = QWxp\\SQL2019;Initial Catalog=ContactDB;Integrated Security=True"); });
             services.AddTransient<IUserRepository, UserRepository>();
-
+            //services.AddSwaggerGen(swag =>
+            //{
+                
+            //    swag.SwaggerDoc("swagger",new OpenApiInfo(){ Title = "Doc" });
+            //    swag.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+            //});
             #region Cache Setup
             services.AddResponseCaching();
             services.AddMemoryCache();
@@ -89,11 +96,15 @@ namespace AppApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseRouting();
+            //app.UseSwagger(p => { p.RouteTemplate = "/api/doc/v1/swagger.json"; });
+            //app.UseSwaggerUI(p =>
+            //{
+            //    p.SwaggerEndpoint("/api/doc/v1", "v1");
+            //});
+            //app.UseRouting();
             // app.UseCors("PolicyCR");
             app.UseAuthentication();
             app.UseAuthorization();
-            
             app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
