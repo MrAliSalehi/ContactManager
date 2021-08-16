@@ -4,6 +4,8 @@ ClientSide: ℹ️`WinForms .Net5.0`
 
 WebApi : ℹ️`Asp.Net WebApi 5.0` <b>==></b>
 
+<b>Authorization With JwT</b>  ⚠️[SecretKey Defined In Source Which Is Not Secure] ⚠️
+
 RepositoryPattern Used
 
 ⚠️ConnString Is In StartUp File⚠️
