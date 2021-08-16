@@ -101,7 +101,7 @@ namespace ClientManager
         #endregion
 
         #region Form
-        private async void AddUserForm_Load(object sender, EventArgs e)
+        private async  void AddUserForm_Load(object sender, EventArgs e)
         {
             if (_mode is FormMode.Edit)
             {
@@ -118,15 +118,15 @@ namespace ClientManager
                     TB_Num.Text = DSData.Phone;
                     TB_Email.Text = DSData.Email;
                     TB_Note.Text = DSData.Note;
+
                 }
             }
+
         }
 
-
         #endregion
 
         #endregion
-
     }
 
 }

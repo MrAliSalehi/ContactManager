@@ -93,6 +93,7 @@ namespace ClientManager
             this.BTN_remove.TabIndex = 5;
             this.BTN_remove.Text = "Remove";
             this.BTN_remove.UseVisualStyleBackColor = true;
+            this.BTN_remove.Click += new System.EventHandler(this.BTN_remove_Click);
             // 
             // BTN_Update
             // 

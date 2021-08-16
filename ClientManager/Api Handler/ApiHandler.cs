@@ -73,6 +73,19 @@ namespace ClientManager
                     return new Responce() { status = Putresponse.StatusCode is HttpStatusCode.OK ? ResponceStatus.success : ResponceStatus.BadRequest, Content = Putcontent };
 
                 #endregion
+
+                #region Delete
+                case RequestMethod.Delete:
+                    var DeleteClient = new RestClient(SetUrl.ApiUrl);
+                    DeleteClient.Authenticator = new JwtAuthenticator(model.tokenConfig.token);
+                    var deleteRequest = new RestRequest($"/{Convert.ToInt32(model.RouteData)}");
+                    deleteRequest.AddHeader("Content-Type", model.BodyData.ContentType);
+                    var deleteResponse = DeleteClient.Delete(deleteRequest);
+                    var DeleteContent = deleteResponse.Content;
+                    return new Responce() { status = deleteResponse.StatusCode is HttpStatusCode.OK ? ResponceStatus.success : ResponceStatus.BadRequest, Content = DeleteContent };
+
+
+                #endregion
                 default:
                     return null;
             }
@@ -204,9 +217,20 @@ namespace ClientManager
         #endregion
 
         #region Delete
-        public async Task<Responce> RemoveUserAysnc()
+        public async Task<Responce> RemoveUserAysnc(int id,string token)
         {
-            return null;
+            var Request = await SendRequestAysnc(new RequestModel()
+            {
+                Controller = "users",
+                RouteData = id.ToString(),
+                requestMethod = RequestMethod.Delete,
+                tokenConfig = new Token()
+                {
+                    token = token
+                },
+                BodyData = new Body(){ ContentType = "application/json"}
+            });
+            return new Responce(){ status = Request.status, Content = Request.Content};
         }
 
 

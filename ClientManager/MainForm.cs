@@ -3,6 +3,7 @@ using System.Net;
 using System.IO;
 using System.Windows.Forms;
 using System.Globalization;
+using AppConfig.Status;
 using ClientManager.AppConfig;
 using ClientManager.Models;
 using Newtonsoft.Json;
@@ -132,7 +133,7 @@ namespace ClientManager
             }
             else if (DGV_1.SelectedRows.Count is 0)
             {
-                
+
                 MessageBox.Show("select a row plz");
             }
             else
@@ -140,6 +141,36 @@ namespace ClientManager
                 MessageBox.Show("cant edit multiple rows");
             }
 
+        }
+
+        private async void BTN_remove_Click(object sender, EventArgs e)
+        {
+            if (DGV_1.SelectedRows.Count is 1)
+            {
+                int i = DGV_1.SelectedCells[0].RowIndex;
+                DataGridViewRow selected = DGV_1.Rows[i];
+                ReadToken token = new();
+                ApiHandler api = new();
+               var Request = await api.RemoveUserAysnc(Convert.ToInt32(selected.Cells["N:ID"].Value), await token.TokenReaderAsync());
+               if (Request.status == ResponceStatus.success)
+               {
+                   MessageBox.Show("User Deleted");
+                   DGV_1.Rows.RemoveAt(i);
+               }
+               else
+               {
+                   MessageBox.Show("cant Delete This User");
+               }
+            }
+            else if (DGV_1.SelectedRows.Count is 0)
+            {
+
+                MessageBox.Show("select a row plz");
+            }
+            else
+            {
+                MessageBox.Show("cant edit multiple rows");
+            }
         }
     }
 }
