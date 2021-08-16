@@ -93,7 +93,7 @@ namespace AppApi
             // app.UseCors("PolicyCR");
             app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
